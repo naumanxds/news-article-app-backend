@@ -1,4 +1,5 @@
 {
+    "api.data.something_wrong": "Something went wrong",
     "api.data.saved_successful": "Data saved Successfully",
     "api.data.not_found": "Data not found",
     "api.data.found_successful": "Data found Successfully",
