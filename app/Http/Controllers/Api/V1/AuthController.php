@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UserRegistrationRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
@@ -218,5 +219,46 @@ class AuthController
             'message' => __('api.data.updated_successful'),
             'data' => []
         ], 200);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/auth/register",
+     *     summary="Register a new user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password","password_confirmation"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="secret123"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="1|abc123")
+     *         )
+     *     )
+     * )
+     */
+    public function register(UserRegistrationRequest $request)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return response()->json([
+            'status' => 1,
+            'message' => __('api.data.saved_successful'),
+            'data' => [
+                'token' => $user->createToken('api')->plainTextToken
+            ]
+        ]);
     }
 }

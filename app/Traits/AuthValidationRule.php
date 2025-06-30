@@ -27,4 +27,13 @@ trait AuthValidationRule
             'password' => 'required|min:6|confirmed',
         ];
     }
+
+    public function userRegistrationValidationRules(): array
+    {
+        return [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ];
+    }
 }
