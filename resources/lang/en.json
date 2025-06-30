@@ -1,0 +1,11 @@
+{
+    "api.data.saved_successful": "Data saved Successfully",
+    "api.data.not_found": "Data not found",
+    "api.data.found_successful": "Data found Successfully",
+    "api.data.deleted_successful": "Data deleted Successfully",
+    "api.data.deleted_unsuccessful": "Could not Delete data",
+    "api.data.updated_successful": "Data updated Successfully",
+    "api.data.updated_unsuccessful": "Could not update Data",
+    "api.data.invalid": "Invalid Data Submitted",
+    "api.data.logout_successful": "Logout Successful"
+}
