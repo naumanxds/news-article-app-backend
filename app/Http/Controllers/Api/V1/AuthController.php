@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Requests\AuthLoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController
@@ -27,6 +28,17 @@ class AuthController
             'data' => [
                 'token' => $user->createToken('API-Token')->plainTextToken,
             ]
+        ], 200);
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 1,
+            'message' => __('auth.logout_successful'),
+            'data' => []
         ], 200);
     }
 }
