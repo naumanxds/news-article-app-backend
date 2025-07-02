@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -27,7 +28,7 @@ use Illuminate\Support\Str;
  *     scheme="bearer"
  * )
  */
-class AuthController
+class AuthController extends Controller
 {
     /**
      * @OA\Post(
