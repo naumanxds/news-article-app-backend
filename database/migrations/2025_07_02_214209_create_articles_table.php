@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('author')->nullable()->index();
-            $table->text('description')->nullable();
-            $table->string('url')->nullable();
+            $table->text('content')->nullable();
+            $table->text('url')->nullable();
+            $table->text('image_url')->nullable();
+            $table->string('source')->nullable();
             $table->string('data_source')->nullable()->index();
             $table->date('published_at')->nullable();
             $table->unsignedBigInteger('tag_id')->nullable()->index();
