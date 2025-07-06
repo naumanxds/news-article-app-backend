@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Middleware\DelayAfterJobMiddleware;
 use App\Interfaces\FetchArticleInterface;
 use App\Models\Article;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +20,15 @@ class ProcessFetchArticle implements ShouldQueue
         protected FetchArticleInterface $fetchArticleService,
         protected array $params,
         protected int $tagId,
+        protected $addDelay
     ) { }
+
+    public function middleware(): array
+    {
+        return [
+            new DelayAfterJobMiddleware($this->addDelay),
+        ];
+    }
 
     /**
      * Execute the job.
@@ -34,7 +43,10 @@ class ProcessFetchArticle implements ShouldQueue
 
         $data = $this->fetchArticleService->fetchArticles($this->params);
         if (empty($data)) {
-            Log::warning('ProcessFetchArticle :: handle :: Data not found for the provided params. :: ', $this->params);
+            Log::warning(
+                'ProcessFetchArticle :: handle :: Data not found for the provided params. :: ' . $this->fetchArticleService->platformName() . ' :: ',
+                $this->params
+            );
 
             return;
         }
