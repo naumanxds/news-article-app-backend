@@ -7,18 +7,18 @@
     <!-- Filters -->
     <form id="filterForm" class="row g-3 mb-4">
         <div class="col-md-3">
-            <input type="text" name="author" class="form-control" placeholder="Author">
+            <select id="dataSourceSelect" name="data_source[]" multiple></select>
         </div>
+
         <div class="col-md-3">
-            <input type="text" name="source" class="form-control" placeholder="Source">
+            <select id="tagSelect" name="tag_id" placeholder="Select Tag"></select>
         </div>
+
         <div class="col-md-3">
-            <input type="text" name="data_source" class="form-control" placeholder="Data Source">
+            <input type="text" id="publishedRange" name="published_at" class="form-control" placeholder="Select date range" readonly>
         </div>
-        <div class="col-md-3">
-            <input type="text" name="tag_id" class="form-control" placeholder="Tag ID">
-        </div>
-        <div class="col-md-12 d-flex justify-content-end">
+
+        <div class="col-md-3 d-flex justify-content-end align-items-start gap-2">
             <button class="btn btn-primary" type="submit">Filter</button>
         </div>
     </form>
@@ -61,15 +61,40 @@
     document.addEventListener('DOMContentLoaded', function () {
         const tableBody = document.getElementById('articlesBody');
         const pagination = document.getElementById('pagination');
-        const filterForm = document.getElementById('filterForm');
+        const dataSourceChoices = new Choices('#dataSourceSelect', {
+            removeItemButton: true,
+            placeholderValue: 'Select Data Sources',
+            choices: [
+                { value: 'NewsApiOrg', label: 'NewsApiOrg' },
+                { value: 'NewYorkTimes', label: 'NewYorkTimes' },
+                { value: 'TheGuardian', label: 'TheGuardian' }
+            ]
+        });
+
+        const tagSelect = new Choices('#tagSelect', {
+            searchEnabled: true,
+            placeholderValue: 'Select a Tag',
+        });
 
         let currentPage = 1;
 
         function fetchArticles(page = 1, filters = {}) {
             tableBody.innerHTML = `<tr><td colspan="12" class="text-center">Loading...</td></tr>`;
-            let query = new URLSearchParams({ ...filters, page });
 
-            fetch(`/api/v1/articles?${query.toString()}`)
+            const queryParams = new URLSearchParams();
+
+            queryParams.set('page', page);
+
+            for (const key in filters) {
+                const value = filters[key];
+                if (Array.isArray(value)) {
+                    value.forEach(v => queryParams.append(`${key}[]`, v));
+                } else {
+                    queryParams.append(key, value);
+                }
+            }
+
+            fetch(`/api/v1/articles?${queryParams.toString()}`)
                 .then(response => response.json())
                 .then(data => {
                     renderArticles(data.data);
@@ -80,6 +105,7 @@
                     tableBody.innerHTML = `<tr><td colspan="12" class="text-center text-danger">Failed to load data.</td></tr>`;
                 });
         }
+
 
         function renderArticles(articles) {
             if (articles.length === 0) {
@@ -139,20 +165,64 @@
             });
         }
 
+        // Fetch tags from API
+        fetch('/api/v1/tags')
+            .then(res => res.json())
+            .then(res => {
+                if (res.data) {
+                    const tagOptions = [
+                        { value: '', label: '-- All Tags --', selected: true }, // <--- this line
+                        ...res.data.map(tag => ({
+                            value: tag.id,
+                            label: tag.name
+                        }))
+                    ];
+                    tagSelect.setChoices(tagOptions, 'value', 'label', true);
+                }
+            });
 
         function getFilters() {
-            const formData = new FormData(filterForm);
             const filters = {};
-            for (const [key, value] of formData.entries()) {
-                if (value) filters[key] = value;
+
+            // data_source[] (array)
+            const selectedSources = dataSourceChoices.getValue(true);
+            if (selectedSources.length) {
+                filters['filters[data_source]'] = selectedSources;
             }
+
+            // tag_id
+            const selectedTag = tagSelect.getValue(true);
+            if (selectedTag) {
+                filters['filters[tag_id]'] = selectedTag;
+            }
+
+            // published_at[from] & [to]
+            const range = document.getElementById('publishedRange').value;
+            if (range) {
+                const [from, to] = range.split(' - ');
+                if (from && to) {
+                    filters['filters[published_at][from]'] = from;
+                    filters['filters[published_at][to]'] = to;
+                }
+            }
+
             return filters;
         }
 
+        // Date Range Picker
+        const picker = new Litepicker({
+            element: document.getElementById('publishedRange'),
+            singleMode: false,
+            format: 'YYYY-MM-DD',
+            numberOfMonths: 2,
+            numberOfColumns: 2
+        });
+
+        // Update fetchArticles() to pass proper filters
+        const filterForm = document.getElementById('filterForm');
         filterForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            currentPage = 1;
-            fetchArticles(currentPage, getFilters());
+            fetchArticles(1, getFilters());
         });
 
         // Initial load

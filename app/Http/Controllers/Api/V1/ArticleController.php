@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ArticleListRequest;
 use App\Models\Article;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -11,9 +13,11 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ArticleListRequest $request): JsonResponse
     {
-        $articles = Article::with('tag')->paginate();
+        $articles = Article::with('tag')
+            ->filter($request->get('filters', []))
+            ->paginateFilter();
 
         return response()->json(array_merge(
             $articles->toArray(),
