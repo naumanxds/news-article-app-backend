@@ -4,38 +4,38 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessFetchArticle;
 use App\Models\Tag;
-use App\Services\NYTimesService;
+use App\Services\TheGuardianService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class FetchNYTimesArticleCommand extends Command
+class FetchTheGuardianArticleCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:fetch-nytimes-articles-command';
+    protected $signature = 'app:fetch-theguardian-article-command';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This Command will push payload to Queue for articles to be fetched from NewYorkTimes';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $limit = (int)floor(NYTimesService::DAILY_API_LIMIT / Tag::count());
+        $limit = (int)floor(TheGuardianService::DAILY_API_LIMIT / Tag::count());
         $tags = Tag::all();
         if ($limit < 1) {
             $limit = 1;
-            $tags = Tag::orderBy('last_fetched_at', 'asc')->take(NYTimesService::DAILY_API_LIMIT)->get();
+            $tags = Tag::orderBy('last_fetched_at', 'asc')->take(TheGuardianService::DAILY_API_LIMIT)->get();
 
-            $warningMessage = 'FetchNYTimesArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
+            $warningMessage = 'FetchTheGuardianArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
             $this->warn($warningMessage);
             Log::warning($warningMessage);
         }
@@ -45,16 +45,18 @@ class FetchNYTimesArticleCommand extends Command
                 $params = [
                     'q' => $tag->name,
                     'page' => $i + 1,
-                    'sort' => 'best',
-                    'end_date' => today()->subDay(NYTimesService::DAY_DIFFERENCE_FROM_TODAY)->format('Ymd'),
-                    'begin_date' => today()->subDays(NYTimesService::DAY_DIFFERENCE_FROM_TODAY + 20)->format('Ymd'),
+                    'order-by' => 'newest',
+                    'show-fields' => 'all',
+                    'page-size' => 50,
+                    'to-date' => today()->subDay(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
+                    'from-date' => today()->subDays(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY + 1)->format('Y-m-d'),
                 ];
 
                 dispatch(new ProcessFetchArticle(
-                    new NYTimesService(),
+                    new TheGuardianService(),
                     $params,
                     $tag->id,
-                    NYTimesService::DELAY_SECONDS
+                    TheGuardianService::DELAY_SECONDS
                 ));
             }
 

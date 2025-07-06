@@ -7,7 +7,7 @@ use Closure;
 class DelayAfterJobMiddleware
 {
     public function __construct(
-        private int $delay = 2,
+        private int $delay = 0,
     ) { }
 
     public function handle($job, Closure $next)

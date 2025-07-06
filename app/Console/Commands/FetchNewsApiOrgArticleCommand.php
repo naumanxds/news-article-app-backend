@@ -35,7 +35,7 @@ class FetchNewsApiOrgArticleCommand extends Command
             $limit = 1;
             $tags = Tag::orderBy('last_fetched_at', 'asc')->take(NewsApiOrgService::DAILY_API_LIMIT)->get();
 
-            $warningMessage = 'FetchNewsApiOrgArticle :: handle :: The limit is reached and some of the records will not be fetched.';
+            $warningMessage = 'FetchNewsApiOrgArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
             $this->warn($warningMessage);
             Log::warning($warningMessage);
         }
