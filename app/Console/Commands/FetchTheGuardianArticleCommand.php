@@ -49,7 +49,7 @@ class FetchTheGuardianArticleCommand extends Command
                     'show-fields' => 'all',
                     'page-size' => 50,
                     'to-date' => today()->subDay(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
-                    'from-date' => today()->subDays(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY + 1)->format('Y-m-d'),
+                    'from-date' => today()->subDays(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Y-m-d'),
                 ];
 
                 dispatch(new ProcessFetchArticle(

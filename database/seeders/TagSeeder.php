@@ -13,15 +13,11 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        Tag::create(['name' => 'nasa']);
-        Tag::create(['name' => 'movies']);
-        Tag::create(['name' => 'elon musk']);
-        Tag::create(['name' => 'facebook']);
-        Tag::create(['name' => 'tesla']);
-        Tag::create(['name' => 'gold']);
+        Tag::create(['name' => 'space']);
         Tag::create(['name' => 'health']);
-        Tag::create(['name' => 'food']);
         Tag::create(['name' => 'weather']);
-        Tag::create(['name' => 'stock market']);
+        Tag::create(['name' => 'sports']);
+        Tag::create(['name' => 'politics']);
+        Tag::create(['name' => 'taxes']);
     }
 }

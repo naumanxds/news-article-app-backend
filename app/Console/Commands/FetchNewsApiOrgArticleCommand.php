@@ -15,7 +15,7 @@ class FetchNewsApiOrgArticleCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:fetch-news-api-org-article';
+    protected $signature = 'app:fetch-newsapiorg-article-command';
 
     /**
      * The console command description.
@@ -48,7 +48,7 @@ class FetchNewsApiOrgArticleCommand extends Command
                     'page' => $i + 1,
                     'sortBy' => 'popularity',
                     'to' => today()->subDay(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
-                    'from' => today()->subDays(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY + 1)->format('Y-m-d'),
+                    'from' => today()->subDays(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Y-m-d'),
                 ];
 
                 dispatch(new ProcessFetchArticle(

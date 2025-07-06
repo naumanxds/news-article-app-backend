@@ -47,7 +47,7 @@ class FetchNYTimesArticleCommand extends Command
                     'page' => $i + 1,
                     'sort' => 'best',
                     'end_date' => today()->subDay(NYTimesService::DAY_DIFFERENCE_FROM_TODAY)->format('Ymd'),
-                    'begin_date' => today()->subDays(NYTimesService::DAY_DIFFERENCE_FROM_TODAY + 20)->format('Ymd'),
+                    'begin_date' => today()->subDays(NYTimesService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Ymd'),
                 ];
 
                 dispatch(new ProcessFetchArticle(
