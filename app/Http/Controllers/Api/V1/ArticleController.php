@@ -13,7 +13,15 @@ class ArticleController extends Controller
      */
     public function index()
     {
+        $articles = Article::with('tag')->paginate();
 
+        return response()->json(array_merge(
+            $articles->toArray(),
+            [
+                'success' => 1,
+                'message' => __('api.data.found_successful'),
+            ]
+        ), 200);
     }
 
     /**

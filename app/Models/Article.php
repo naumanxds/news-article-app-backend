@@ -10,7 +10,7 @@ class Article extends Model
     protected $fillable = ['title', 'author', 'content', 'url', 'image_url', 'source', 'data_source', 'published_at', 'tag_id'];
 
     protected $casts = [
-        'published_at' => 'date',
+        'published_at' => 'date:Y-m-d',
     ];
 
     public function tag(): BelongsTo
