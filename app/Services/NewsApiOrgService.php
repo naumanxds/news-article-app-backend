@@ -92,6 +92,9 @@ class NewsApiOrgService implements FetchArticleInterface
         return $parsedData;
     }
 
+    /**
+     * Calculates the total number of pages based on the provided parameters.
+     */
     public function getPageCount(array $params = []): int
     {
         $res =$this->fetchArticles($params);

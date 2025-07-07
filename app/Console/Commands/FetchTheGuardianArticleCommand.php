@@ -24,15 +24,21 @@ class FetchTheGuardianArticleCommand extends Command
      */
     protected $description = 'Command description';
 
+    public function __construct(
+        private TheGuardianService $theGuardianService,
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $limit = (int)floor(TheGuardianService::DAILY_API_LIMIT / Tag::count());
+        $limitForAll = (int)floor(TheGuardianService::DAILY_API_LIMIT / Tag::count());
         $tags = Tag::all();
-        if ($limit < 1) {
-            $limit = 1;
+        if ($limitForAll < 1) {
+            $limitForAll = 1;
             $tags = Tag::orderBy('last_fetched_at', 'asc')->take(TheGuardianService::DAILY_API_LIMIT)->get();
 
             $warningMessage = 'FetchTheGuardianArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
@@ -41,6 +47,7 @@ class FetchTheGuardianArticleCommand extends Command
         }
 
         foreach ($tags as $tag) {
+            $limit = $limitForAll;
             for ($i = 0; $i < $limit; $i++) {
                 $params = [
                     'q' => $tag->name,
@@ -49,8 +56,20 @@ class FetchTheGuardianArticleCommand extends Command
                     'show-fields' => 'all',
                     'page-size' => 50,
                     'to-date' => today()->subDay(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
-                    'from-date' => today()->subDays(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Y-m-d'),
+                    'from-date' => today()->subDays(TheGuardianService::DAY_DIFFERENCE_FROM_TODAY + 5)->format('Y-m-d'),
                 ];
+
+                if ($i == 0) {
+                    $totalPages = $this->theGuardianService->getPageCount($params);
+                    if ($totalPages == 0) {
+                        $this->warn("No articles found for tag: {$tag->name}");
+                        Log::warning("FetchTheGuardianArticleCommand :: handle :: No articles found for tag: {$tag->name}");
+
+                        break;
+                    } else if ($limit > $totalPages) {
+                        $limit = $totalPages;
+                    }
+                }
 
                 dispatch(new ProcessFetchArticle(
                     new TheGuardianService(),

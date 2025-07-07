@@ -45,10 +45,7 @@ class TheGuardianService implements FetchArticleInterface
                 array_merge($params, ['api-key' => $this->apiKey]),
             );
 
-            $data = json_decode($data, true) ?? [];
-            if (isset($data['response']) && $data['response']['status'] === 'ok' && isset($data['response']['results'])) {
-                return $data['response']['results'];
-            }
+            return json_decode($data, true) ?? [];
         } catch (Exception $e) {
             Log::error('TheGuardianService :: fetchArticles :: Error fetching articles :: ' . $e->getMessage());
         }
@@ -66,12 +63,12 @@ class TheGuardianService implements FetchArticleInterface
      */
     public function parseData(array $data, int $tagId): array
     {
-        if (empty($data)) {
+        if (empty($data['response']['results'])) {
             return [];
         }
 
         $parsedData = [];
-        foreach ($data as $article) {
+        foreach ($data['response']['results'] as $article) {
             if (empty($article['webTitle'])) {
                 continue;
             }
@@ -90,5 +87,21 @@ class TheGuardianService implements FetchArticleInterface
         }
 
         return $parsedData;
+    }
+
+    /**
+     * Calculates the total number of pages based on the provided parameters.
+     */
+    public function getPageCount(array $params = []): int
+    {
+        if (isset($params['show-fields'])) {
+            unset($params['show-fields']);
+        }
+
+        $res = $this->fetchArticles($params);
+
+        return !empty($res['response'])
+            ? $res['response']['pages']
+            : 0;
     }
 }
