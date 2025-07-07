@@ -12,7 +12,7 @@ class TheGuardianService implements FetchArticleInterface
     const API_BASE_URL = 'https://content.guardianapis.com/search';
     const DAILY_API_LIMIT = 500;
     const DAY_DIFFERENCE_FROM_TODAY = 2;
-    const DELAY_SECONDS = 2;
+    const DELAY_SECONDS = 1;
 
     private string $apiKey = '';
 

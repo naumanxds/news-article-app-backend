@@ -13,7 +13,7 @@ class NewsApiOrgService implements FetchArticleInterface
     const DAILY_API_LIMIT = 100;
     const PAGE_SIZE = 100;
     const DAY_DIFFERENCE_FROM_TODAY = 1;
-    const DELAY_SECONDS = 2;
+    const DELAY_SECONDS = 1;
 
     private string $apiKey = '';
 
