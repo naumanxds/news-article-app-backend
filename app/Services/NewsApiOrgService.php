@@ -91,4 +91,13 @@ class NewsApiOrgService implements FetchArticleInterface
 
         return $parsedData;
     }
+
+    public function getPageCount(array $params = []): int
+    {
+        $res =$this->fetchArticles($params);
+
+        return $res['totalResults']
+            ? floor($res['totalResults'] / self::PAGE_SIZE)
+            : 0;
+    }
 }

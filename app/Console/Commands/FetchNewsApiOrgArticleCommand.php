@@ -24,15 +24,21 @@ class FetchNewsApiOrgArticleCommand extends Command
      */
     protected $description = 'This Command will push payload to Queue for articles to be fetched from NewsApiOrg';
 
+    public function __construct(
+        private NewsApiOrgService $newsApiOrgService,
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $limit = (int)floor(NewsApiOrgService::DAILY_API_LIMIT / Tag::count());
+        $limitForAll = (int)floor(NewsApiOrgService::DAILY_API_LIMIT / Tag::count());
         $tags = Tag::all();
-        if ($limit < 1) {
-            $limit = 1;
+        if ($limitForAll < 1) {
+            $limitForAll = 1;
             $tags = Tag::orderBy('last_fetched_at', 'asc')->take(NewsApiOrgService::DAILY_API_LIMIT)->get();
 
             $warningMessage = 'FetchNewsApiOrgArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
@@ -41,6 +47,7 @@ class FetchNewsApiOrgArticleCommand extends Command
         }
 
         foreach ($tags as $tag) {
+            $limit = $limitForAll;
             for ($i = 0; $i < $limit; $i++) {
                 $params = [
                     'q' => $tag->name,
@@ -50,6 +57,18 @@ class FetchNewsApiOrgArticleCommand extends Command
                     'to' => today()->subDay(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
                     'from' => today()->subDays(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Y-m-d'),
                 ];
+
+                if ($i == 0) {
+                    $totalPages = $this->newsApiOrgService->getPageCount($params);
+                    if ($totalPages == 0) {
+                        $this->warn("No articles found for tag: {$tag->name}");
+                        Log::warning("FetchNewsApiOrgArticleCommand :: handle :: No articles found for tag: {$tag->name}");
+
+                        break;
+                    } else if ($limit > $totalPages) {
+                        $limit = $totalPages;
+                    }
+                }
 
                 dispatch(new ProcessFetchArticle(
                     new NewsApiOrgService(),
