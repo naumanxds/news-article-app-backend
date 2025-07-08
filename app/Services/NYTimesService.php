@@ -45,10 +45,7 @@ class NYTimesService implements FetchArticleInterface
                 array_merge($params, ['api-key' => $this->apiKey]),
             );
 
-            $data = json_decode($data->body(), true) ?? [];
-            if (isset($data['response']['docs'])) {
-                return $data['response']['docs'];
-            }
+            return json_decode($data->body(), true) ?? [];
         } catch (Exception $e) {
             Log::error('NewsApiOrgService :: fetchArticles :: Error fetching articles :: ' . $e->getMessage());
         }
@@ -66,12 +63,12 @@ class NYTimesService implements FetchArticleInterface
      */
     public function parseData(array $data, int $tagId): array
     {
-        if (empty($data)) {
+        if (empty($data) || !isset($data['response']['docs'])) {
             return [];
         }
 
         $parsedData = [];
-        foreach ($data as $article) {
+        foreach ($data['response']['docs'] as $article) {
             if (empty($article['headline']['main'])) {
                 continue;
             }

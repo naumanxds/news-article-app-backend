@@ -69,6 +69,8 @@ class FetchTheGuardianArticleCommand extends Command
                     } else if ($limit > $totalPages) {
                         $limit = $totalPages;
                     }
+
+                    $limit--;
                 }
 
                 dispatch(new ProcessFetchArticle(
