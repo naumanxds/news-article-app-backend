@@ -93,3 +93,5 @@ php artisan serve
 
 - The above link will take you to the homepage with details on how to pull the articles and other details about the project.
 
+- A loom video is also created for viewing the application [Click for LOOM Video](https://www.loom.com/share/04042f60f2ef42a88542fa94ca63a304?sid=c832265c-5308-4bed-8c98-142dd5c739ee)
+
