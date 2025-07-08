@@ -24,15 +24,21 @@ class FetchNYTimesArticleCommand extends Command
      */
     protected $description = 'This Command will push payload to Queue for articles to be fetched from NewYorkTimes';
 
+    public function __construct(
+        private NYTimesService $nYTimesService,
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $limit = (int)floor(NYTimesService::DAILY_API_LIMIT / Tag::count());
+        $limitForAll = (int)floor(NYTimesService::DAILY_API_LIMIT / Tag::count());
         $tags = Tag::all();
-        if ($limit < 1) {
-            $limit = 1;
+        if ($limitForAll < 1) {
+            $limitForAll = 1;
             $tags = Tag::orderBy('last_fetched_at', 'asc')->take(NYTimesService::DAILY_API_LIMIT)->get();
 
             $warningMessage = 'FetchNYTimesArticleCommand :: handle :: The limit is reached and some of the records will not be fetched.';
@@ -41,14 +47,29 @@ class FetchNYTimesArticleCommand extends Command
         }
 
         foreach ($tags as $tag) {
+            $limit = $limitForAll;
             for ($i = 0; $i < $limit; $i++) {
                 $params = [
                     'q' => $tag->name,
-                    'page' => $i + 1,
+                    'page' => $i,
                     'sort' => 'best',
                     'end_date' => today()->subDay(NYTimesService::DAY_DIFFERENCE_FROM_TODAY)->format('Ymd'),
                     'begin_date' => today()->subDays(NYTimesService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Ymd'),
                 ];
+
+                if ($i == 0) {
+                    $totalPages = $this->nYTimesService->getPageCount($params);
+                    if ($totalPages == 0) {
+                        $this->warn("No articles found for tag: {$tag->name}");
+                        Log::warning("FetchNewsApiOrgArticleCommand :: handle :: No articles found for tag: {$tag->name}");
+
+                        break;
+                    } else if ($limit > $totalPages) {
+                        $limit = $totalPages;
+                    }
+
+                    $limit--;
+                }
 
                 dispatch(new ProcessFetchArticle(
                     new NYTimesService(),

@@ -11,6 +11,7 @@ class NYTimesService implements FetchArticleInterface
 {
     const API_BASE_URL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
     const DAILY_API_LIMIT = 100;
+    const PAGE_SIZE = 10;
     const DAY_DIFFERENCE_FROM_TODAY = 1;
     const DELAY_SECONDS = 1;
 
@@ -89,5 +90,19 @@ class NYTimesService implements FetchArticleInterface
         }
 
         return $parsedData;
+    }
+
+    /**
+     * Calculates the total number of pages based on the provided parameters.
+     */
+    public function getPageCount(array $params = []): int
+    {
+        $res = $this->fetchArticles($params);
+
+        if (!isset($res['response']) || !isset($res['response']['metadata'])) {
+            return 0;
+        }
+
+        return (int)floor($res['response']['metadata']['hits'] / self::PAGE_SIZE);
     }
 }

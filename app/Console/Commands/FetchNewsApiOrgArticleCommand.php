@@ -55,7 +55,7 @@ class FetchNewsApiOrgArticleCommand extends Command
                     'page' => $i + 1,
                     'sortBy' => 'popularity',
                     'to' => today()->subDay(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY)->format('Y-m-d'),
-                    'from' => today()->subDays(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY + 5)->format('Y-m-d'),
+                    'from' => today()->subDays(NewsApiOrgService::DAY_DIFFERENCE_FROM_TODAY + 15)->format('Y-m-d'),
                 ];
 
                 if ($i == 0) {
