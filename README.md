@@ -1,61 +1,95 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Backend For New Article App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The application is backend for the new article application. The project collects data from different News Article platforms using their API's Some of the platorms used for collecting data are as following.
 
-## About Laravel
+- The Guardian
+- NewYork Times
+- NewsApiOrg
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Installation (Ubunut/Linux)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Below are the installation steps to run the application on your local system.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Pre Requesistes for installation
 
-## Learning Laravel
+Below are the things needed for the setup to work properly on the local machine
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Mysql
+- Apache
+- Php > 8.0
+- composer
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+`NOTE FOR PEOPLE WHO HAVE DOCKER!`  Make sure that your docker is not running or conflicting with ports like `3306` and `8000` and your services like mysql and apache are enabled and running.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installation Steps
 
-## Laravel Sponsors
+- Download the project from github
+- Open up the project folder and open Terminal inside the root of the project folder
+- Run below command
+```php
+composer install
+```
+- Once the installation is complete Open the application folder in any code editor example VS-Code
+- Now create a new file on the root of the project folder by the name of `.env`
+- Open up the file `.env.example` this one already exists in the project.
+- Copy every thing from `.env.example` and paste it in `.env`
+- Now that our `.env` is ready we have to make some modification to the values.
+- But before that go ahead and create a database in the MySql `newsss_app919`
+- Now we are ready to update our `.env`
+- Open up `.env` and update the following 3 variables with your own values set in your system
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```php
+# IN THE PREVIOUS STEPS WE SET THE VALUE TO "newsss_app"
+# BUT IF YOU NAMED YOUR DATABASE SOMETHINGE ELSE USE THAT NAME
 
-### Premium Partners
+DB_DATABASE=newsss_app919
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# USE THE ONES SET IN YOUR SYSTEM FOR BELOW VARIABLES
 
-## Contributing
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=YOUR_MYSQL_ADMIN_USERNAME
+DB_PASSWORD=YOUR_MYSQL_ADMIN_PASSWORD
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# BELOW VARIABLE VALUES ARE PROVIDED IN THE EMAIL
 
-## Code of Conduct
+NEWS_API_ORG_API_KEY='PROVIDED_IN_EMAIL'
+THE_GUARDIAN_API_KEY='PROVIDED_IN_EMAIL'
+NEWYORK_TIMES_API_KEY='PROVIDED_IN_EMAIL'
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
 
-## Security Vulnerabilities
+- After updating the `.env` save it and now we are ready to run some commands in the `Terminal`
+- Open the terminal in the root folder of the project and run the following commands `one by one`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```php
+# 1st COMMAND
 
-## License
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# 2nd COMMAND
+
+php artisan optimize:clear
+
+
+# 3rd COMMAND
+
+php artisan migrate:fresh --seed
+
+
+# 4th COMMAND
+
+php artisan storage:link
+
+
+# 5th COMMAND
+
+php artisan serve
+
+```
+
+- After `5th Command` keep the terminal running `DO-NOT-CLOSE-IT` and open the browser and hit the link [http://localhost:8000](http://localhost:8000)
+
+- The above link will take you to the homepage with details on how to pull the articles and other details about the project.
+
