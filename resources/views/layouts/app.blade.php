@@ -13,20 +13,13 @@
 
     <!-- Litepicker for date range -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
-
-
-    <!-- Optional JS like Alpine or custom -->
 </head>
 <body>
     <div class="container py-4">
         @yield('content')
     </div>
 
-    <!-- Optional Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
-
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('scripts')
 </body>
 </html>
