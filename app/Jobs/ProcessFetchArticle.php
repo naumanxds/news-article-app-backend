@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\ArticleCreated;
 use App\Jobs\Middleware\DelayAfterJobMiddleware;
 use App\Interfaces\FetchArticleInterface;
 use App\Models\Article;
@@ -55,5 +56,9 @@ class ProcessFetchArticle implements ShouldQueue
         foreach ($parsedData as $article) {
             Article::create($article);
         }
+
+        broadcast(new ArticleCreated(
+            $this->fetchArticleService->platformName(),
+        ))->toOthers();
     }
 }

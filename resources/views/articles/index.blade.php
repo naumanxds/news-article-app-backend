@@ -4,6 +4,10 @@
 <div class="container mt-4">
     <h2 class="mb-4">Articles</h2>
 
+    <div id="notifications" class="alert alert-info" style="display: none;">
+        <ul id="notificationList"></ul>
+    </div>
+
     <!-- Filters -->
     <form id="filterForm" class="row g-3 mb-4">
         <div class="col-md-3">

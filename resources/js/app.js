@@ -3,6 +3,23 @@ import $ from 'jquery';
 window.jQuery = window.$ = $;
 import Choices from 'choices.js';
 import Litepicker from 'litepicker';
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY, // Uses the REVERB_APP_KEY value
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+});
+
+const notificationList = document.getElementById('notificationList');
+const notificationsDiv = document.getElementById('notifications');
 
 document.addEventListener('DOMContentLoaded', function () {
     const tableBody = document.getElementById('articlesBody');
@@ -16,6 +33,23 @@ document.addEventListener('DOMContentLoaded', function () {
             { value: 'TheGuardian', label: 'TheGuardian' }
         ]
     });
+
+    window.Echo.channel('articles')
+        .listen('.article.created', (event) => {
+            const li = document.createElement('li');
+            li.textContent = `${event.message}`;
+            notificationList.appendChild(li);
+            notificationsDiv.style.display = 'block';
+
+            fetchArticles(1, getFilters());
+
+            setTimeout(() => {
+                notificationList.removeChild(li);
+                if (!notificationList.children.length) {
+                    notificationsDiv.style.display = 'none';
+                }
+            }, 2000);
+        });
 
     const tagSelect = new Choices('#tagSelect', {
         searchEnabled: true,
